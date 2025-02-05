@@ -18,43 +18,26 @@ async def get_users(db: UserCRUD = Depends(get_user_crud)):
 async def register(
     new_user: user_schema.Register, db: UserCRUD = Depends(get_user_crud)
 ):
-    db_user = await db.get_user_by_username(username=new_user.username)
+    db_user = await db.get_user_by_email(email=new_user.email)
     if db_user:
-        raise HTTPException(status_code=409, detail="Username already registered")
+        raise HTTPException(status_code=409, detail="Email already registered")
     await db.create_user(new_user)
     return status.HTTP_201_CREATED
 
 
-@router.delete("", deprecated=True)
+@router.delete("")
 async def delete_user(
     current_user: user_schema.Base = Depends(get_current_user),
     db: UserCRUD = Depends(get_user_crud),
 ):
-    # return await db.delete_user(username=current_user.username)
-    return "deprecated"
+    return await db.delete_user(email=current_user.email)
 
 
-@router.put("/password", deprecated=True)
+@router.put("/password")
 async def update_password(
     request: user_schema.Password,
     current_user: user_schema.Base = Depends(get_current_user),
     db: UserCRUD = Depends(get_user_crud),
 ):
-    # return await db.update_password(  username=current_user.username , password=request.password )
-    return "deprecated"
+    return await db.update_password(  email=current_user.email , password=request.password )
 
-
-@router.put("/birthday", deprecated=True)
-async def update_birthday(
-    request: user_schema.Birthday,
-    current_user: user_schema.Base = Depends(get_current_user),
-    db: UserCRUD = Depends(get_user_crud),
-):
-    # return await db.update_birthday( username=current_user.username ,birthday=request.birthday )
-    return "deprecated"
-
-
-@router.get("/me", response_model=user_schema.Base, deprecated=True)
-async def protected(current_user: user_schema.Base = Depends(get_current_user)):
-    # return current_user
-    return "deprecated"

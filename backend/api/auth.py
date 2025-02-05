@@ -29,10 +29,10 @@ async def login(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    access_token = await create_access_token(data={"username": form_data.username})
-    refresh_token = await create_refresh_token(data={"username": form_data.username})
+    access_token = await create_access_token(data={"email": form_data.username})
+    refresh_token = await create_refresh_token(data={"EMAIL": form_data.username})
 
-    await db.update_user_login(username=form_data.username)
+    await db.update_user_login(email=form_data.username)
     expired_time = (
         int(datetime.now(tz=timezone.utc).timestamp() * 1000)
         + timedelta(minutes=settings.access_token_expire_minutes).seconds * 1000
@@ -76,18 +76,18 @@ async def refresh(
             algorithms=["HS256"],
         )
 
-        username: str = payload.get("username")
-        if username is None:
+        email: str = payload.get("email")
+        if email is None:
             raise credentials_exception
 
     except Exception as e:
         credentials_exception.detail = str(e)
         raise credentials_exception
 
-    access_token = await create_access_token(data={"username": username})
-    refresh_token = await create_refresh_token(data={"username": username})
+    access_token = await create_access_token(data={"email": email})
+    refresh_token = await create_refresh_token(data={"email": email})
 
-    db.update_user_login(username)
+    db.update_user_login(email=email)
     expired_time = (
         int(datetime.now(tz=timezone.utc).timestamp() * 1000)
         + timedelta(minutes=settings.access_token_expire_minutes).seconds * 1000

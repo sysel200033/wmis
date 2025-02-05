@@ -6,9 +6,9 @@ from pydantic import BaseModel
 
 
 class Base(BaseModel):
-    username: str
+    email: str
     birthday: date
-
+    phone_number: str
 
 class Register(Base):
     password: str
