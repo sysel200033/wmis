@@ -18,7 +18,7 @@ async def create_folder_user(
 ):
     user = await db.get_folder_user(mail=current_user.email, folderid=new_folder_user.folder_id)
     if(user.status == Status.ADMIN or user.status == Status.CREATOR):
-        return await db.create_folder_user(current_user, new_folder_user)
+        return await db.create_folder_user(new_folder_user)
     else:
         return status.HTTP_401_UNAUTHORIZED
     

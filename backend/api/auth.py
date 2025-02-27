@@ -30,7 +30,7 @@ async def login(
         )
 
     access_token = await create_access_token(data={"email": form_data.username})
-    refresh_token = await create_refresh_token(data={"EMAIL": form_data.username})
+    refresh_token = await create_refresh_token(data={"email": form_data.username})
 
     await db.update_user_login(email=form_data.username)
     expired_time = (

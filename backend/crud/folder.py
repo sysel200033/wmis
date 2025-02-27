@@ -43,13 +43,18 @@ class FolderCRUD:
         return folder
 
     async def create_folder(self, current_user: user_schema.Base, folder: folder_schema.Base) -> folder_schema.Base:
-        db_folder = FolderModels(
-            name=folder.name,
-            head_folder_id=folder.head_folder_id
-        )
+        if(folder.head_folder_id is not None):
+            db_folder = FolderModels(
+                name=folder.name,
+                head_folder_id=folder.head_folder_id
+            )
+        else:
+            db_folder = FolderModels(
+                name=folder.name
+            )
         self.db_session.add(db_folder)
         await self.db_session.commit()
-        return db_folder
+        return db_folder.id
 
     async def update_folder_name(self, folder_id: int, new_folder_name: str):
         db_folder = await self.get_folder_id(folder_id)

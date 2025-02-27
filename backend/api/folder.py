@@ -19,13 +19,13 @@ router = APIRouter(prefix="/folders", tags=["folders"])
 async def get_folders_by_head(head_folder_id: int | None = None, current_user: user_schema.Base = Depends(get_current_user), db_folder: FolderCRUD = Depends(get_folder_crud), db_folder_user: FolderUserCRUD = Depends(get_folder_user_crud)):
     return await db_folder.get_folders_by_head(head_folder_id=head_folder_id, user_mail=current_user.email)
 
-@router.post("")
+@router.post("", response_model=int)
 async def create_folder(
     new_folder: folder_schema.Base, current_user: user_schema.Base = Depends(get_current_user), db_folder: FolderCRUD = Depends(get_folder_crud), db_file: FileCRUD = Depends(get_file_crud), db_folder_user: FolderUserCRUD = Depends(get_folder_user_crud)
 ):
     folder = await db_folder.create_folder(current_user, new_folder)
-    file = file_schema.Base(content="", folder_id=folder.id)
-    folder_user = folder_user_schema.Base(user_mail=current_user.email, folder_id=folder.id, status=Status.CREATOR)
+    file = file_schema.Base(content="", folder_id=folder)
+    folder_user = folder_user_schema.Base(user_mail=current_user.email, folder_id=folder, status=Status.CREATOR)
     await db_file.create_file(file)
     await db_folder_user.create_folder_user(folder_user)
     return folder
