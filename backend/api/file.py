@@ -12,7 +12,7 @@ from models.folder_user import Status
 
 router = APIRouter(prefix="/files", tags=["files"])
 
-@router.get("", response_model=file_schema.Get)
+@router.get("/{folder_id}", response_model=file_schema.Get)
 async def get_file_folder(folder_id: int, current_user: user_schema.Base = Depends(get_current_user), db_file: FileCRUD = Depends(get_file_crud), db_folder_user: FolderUserCRUD = Depends(get_folder_user_crud)):
     user = await db_folder_user.get_folder_user(mail=current_user.email, folderid=folder_id)
     if(user):
@@ -20,7 +20,7 @@ async def get_file_folder(folder_id: int, current_user: user_schema.Base = Depen
     else:
         return status.HTTP_401_UNAUTHORIZED
 
-@router.put("")
+@router.put("/{folder_id}")
 async def update_file_content(
     content: str,
     folder_id: int,

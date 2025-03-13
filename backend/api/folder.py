@@ -19,6 +19,14 @@ router = APIRouter(prefix="/folders", tags=["folders"])
 async def get_folders_by_head(head_folder_id: int | None = None, current_user: user_schema.Base = Depends(get_current_user), db_folder: FolderCRUD = Depends(get_folder_crud), db_folder_user: FolderUserCRUD = Depends(get_folder_user_crud)):
     return await db_folder.get_folders_by_head(head_folder_id=head_folder_id, user_mail=current_user.email)
 
+@router.get("/{id}")
+async def get_folder_by_id(id: int, current_user: user_schema.Base = Depends(get_current_user), db_folder: FolderCRUD = Depends(get_folder_crud), db_folder_user: FolderUserCRUD = Depends(get_folder_user_crud)):
+    user = await db_folder_user.get_folder_user(mail=current_user.email, folderid=id)
+    if(user is not None and (user.status == Status.ADMIN or user.status == Status.CREATOR or user.status == Status.WRITE or user.status == Status.READ)):
+        return await db_folder.get_folder_id(id=id)
+    else:
+        return status.HTTP_401_UNAUTHORIZED
+
 @router.post("", response_model=int)
 async def create_folder(
     new_folder: folder_schema.Base, current_user: user_schema.Base = Depends(get_current_user), db_folder: FolderCRUD = Depends(get_folder_crud), db_file: FileCRUD = Depends(get_file_crud), db_folder_user: FolderUserCRUD = Depends(get_folder_user_crud)
@@ -30,7 +38,7 @@ async def create_folder(
     await db_folder_user.create_folder_user(folder_user)
     return folder
 
-@router.put("")
+@router.put("/{folder_id}")
 async def update_folder_name(
     folder_id: int,
     new_folder_name: str,
@@ -43,7 +51,7 @@ async def update_folder_name(
     else:
         return status.HTTP_401_UNAUTHORIZED
 
-@router.delete("")
+@router.delete("/{folder_id}")
 async def delete_folder(
     folder_id: int,
     current_user: user_schema.Base = Depends(get_current_user),

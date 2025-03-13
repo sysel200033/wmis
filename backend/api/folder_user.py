@@ -22,13 +22,13 @@ async def create_folder_user(
     else:
         return status.HTTP_401_UNAUTHORIZED
     
-@router.get("")
+@router.get("/{folder_id}")
 async def get_folder_user(
     folder_id: int, current_user: user_schema.Base = Depends(get_current_user), db: FolderUserCRUD = Depends(get_folder_user_crud)
 ):
     return await db.get_folder_user(mail=current_user.email, folderid=folder_id)
 
-@router.put("")
+@router.put("/{folder_id}")
 async def update_folder_user(
     mail: str,
     folder_id: int,
@@ -41,7 +41,7 @@ async def update_folder_user(
     else:
         return status.HTTP_401_UNAUTHORIZED
 
-@router.delete("")
+@router.delete("/{folder_id}")
 async def delete_folder_user(
     mail: str,
     folder_id: int,

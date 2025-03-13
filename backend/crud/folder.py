@@ -23,7 +23,7 @@ class FolderCRUD:
         self.db_session = db_session
 
     async def get_folders_by_head(self, head_folder_id: int | None, user_mail: str):
-        stmt = select(FolderModels).where(FolderModels.header_folder_id == head_folder_id).filter(
+        stmt = select(FolderModels).where(FolderModels.head_folder_id == head_folder_id).filter(
         FolderModels.users.any(UserModels.email == user_mail)
     ).options(joinedload(FolderModels.files), joinedload(FolderModels.users))
         result = await self.db_session.execute(stmt)
@@ -37,7 +37,7 @@ class FolderCRUD:
         return folder
     
     async def get_folder_id(self, id: int):
-        stmt = select(FolderModels).where(FolderModels.id == id)
+        stmt = select(FolderModels).where(FolderModels.id == id).options(joinedload(FolderModels.files), joinedload(FolderModels.users))
         result = await self.db_session.execute(stmt)
         folder = result.scalars().first()
         return folder

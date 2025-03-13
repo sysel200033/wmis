@@ -19,11 +19,13 @@ const routes = [
     name: "FilesWithId",
     component: FilesView,
     props: true,
+    meta: { requiresAuth: true },
   },
   {
     path: "/files",
     name: "Files",
     component: FilesView,
+    meta: { requiresAuth: true },
   },
   {
     path: "/register",
